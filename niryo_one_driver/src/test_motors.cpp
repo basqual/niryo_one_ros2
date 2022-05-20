@@ -143,7 +143,7 @@ void NiryoOneTestMotor::startTrajectory(control_msgs::action::FollowJointTraject
     }
 
     // When to start the trajectory: 1s from now
-    goal.trajectory.header.stamp = node->now() + rclcpp::Duration(1.0);
+    goal.trajectory.header.stamp = node->now() + rclcpp::Duration::from_seconds(1.0);
     
     auto result_future = traj_client_->async_send_goal(goal);
 
@@ -211,7 +211,7 @@ control_msgs::action::FollowJointTrajectory_Goal_<std::allocator<void>> NiryoOne
         goal.trajectory.points[ind].velocities[j] = 0.0;
     }
     // To be reached 1 second after starting along the trajectory
-    goal.trajectory.points[ind].time_from_start = rclcpp::Duration(3.0);
+    goal.trajectory.points[ind].time_from_start = rclcpp::Duration::from_seconds(3.0);
 
     return goal;
 }

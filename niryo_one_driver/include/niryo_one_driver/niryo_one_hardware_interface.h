@@ -46,6 +46,8 @@
 
 namespace niryo_one_driver{
 
+using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
+
 class NiryoOneHardwareInterface:  public hardware_interface::SystemInterface {
 
     public:
