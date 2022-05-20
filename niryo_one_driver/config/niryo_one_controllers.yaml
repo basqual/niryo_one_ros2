@@ -1,0 +1,35 @@
+$(var ns)/controller_manager:
+    ros__parameters:
+        update_rate: 500
+        joint_state_broadcaster:
+            type: joint_state_broadcaster/JointStateBroadcaster
+
+        niryo_one_follow_joint_trajectory_controller:
+            type: joint_trajectory_controller/JointTrajectoryController
+
+$(var ns)/niryo_one_follow_joint_trajectory_controller:
+    ros__parameters:
+        joints: 
+            - $(var ns)_joint_1  
+            - $(var ns)_joint_2
+            - $(var ns)_joint_3  
+            - $(var ns)_joint_4  
+            - $(var ns)_joint_5  
+            - $(var ns)_joint_6
+        command_interfaces:
+            - position
+        state_interfaces:
+            - position
+            - velocity
+        state_publish_rate: 100.0
+        action_monitor_rate: 50.0
+        allow_partial_joints_goal: false
+        constraints:
+            goal_time: 0.0
+            stopped_velocity_tolerance: 0.2
+            $(var ns)_joint_1: {trajectory: 0.5, goal: 0.2}
+            $(var ns)_joint_2: {trajectory: 0.5, goal: 0.2}
+            $(var ns)_joint_3: {trajectory: 0.5, goal: 0.2}
+            $(var ns)_joint_4: {trajectory: 0.5, goal: 0.2}
+            $(var ns)_joint_5: {trajectory: 1.0, goal: 0.3}
+            $(var ns)_joint_6: {trajectory: 1.0, goal: 0.3}

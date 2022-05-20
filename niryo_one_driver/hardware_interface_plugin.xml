@@ -1,0 +1,9 @@
+<library path="niryo_one_hardware_plugin">
+  <class name="niryo_one_driver/NiryoOneHardwareInterface"
+         type="niryo_one_driver::NiryoOneHardwareInterface"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+		ROS2 Control System Driver for the Universal Robots series.
+    </description>
+  </class>
+</library>

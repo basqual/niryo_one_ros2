@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>niryo_one_driver</name>
+    <version>2.3.3</version>
+    <description>Niryo One driver. Provides a hardware interface between ros_control and RPI3 hardware. Also provides
+        user interface to directly interact with hardware
+    </description>
+    <author>Edouard Renard</author>
+    <maintainer email="e.rey-coquais@niryo.com">Etienne Rey-Coquais</maintainer>
+    <license>GPLv3</license>
+
+    <buildtool_depend>ament_cmake</buildtool_depend>
+
+    <depend>boost</depend>
+    <depend>dynamixel_sdk</depend>
+    <depend>pluginlib</depend>
+
+    <build_depend>rclcpp</build_depend>
+    <build_depend>rclcpp_action</build_depend>
+    <build_depend>std_msgs</build_depend>
+    <build_depend>niryo_one_msgs</build_depend>
+
+    <!-- ros_control -->
+    <build_depend>geometry_msgs</build_depend>
+    <build_depend>hardware_interface</build_depend>
+    <build_depend>controller_manager</build_depend>
+    <build_depend>control_msgs</build_depend>
+    <build_depend>sensor_msgs</build_depend>
+    <build_depend>trajectory_msgs</build_depend>
+    <build_depend>mcp_can_rpi</build_depend>
+    <build_depend>urdf</build_depend>
+
+    <exec_depend>rclcpp</exec_depend>
+    <exec_depend>rclcpp_action</exec_depend>
+    <exec_depend>std_msgs</exec_depend>
+    <exec_depend>niryo_one_msgs</exec_depend>
+    <exec_depend>mcp_can_rpi</exec_depend>
+
+    <!-- ros_control -->
+    <exec_depend>hardware_interface</exec_depend>
+    <exec_depend>controller_manager</exec_depend>
+    <exec_depend>control_msgs</exec_depend>
+    <exec_depend>geometry_msgs</exec_depend>
+    <exec_depend>sensor_msgs</exec_depend>
+    <exec_depend>trajectory_msgs</exec_depend>
+    <exec_depend>urdf</exec_depend>
+
+    <export>
+      <build_type>ament_cmake</build_type>
+    </export>
+</package>
