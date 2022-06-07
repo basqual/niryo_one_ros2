@@ -2,10 +2,8 @@
   <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:macro name="bot" params="prefix parent name *origin">
 
-    <!--
     <xacro:include filename="$(find niryo_one_description)/urdf/niryo_one_gripper.urdf.xacro"/>
     <xacro:gripper prefix="${prefix}"/>
-    -->
 
     <xacro:property name="distance_origin_shoulder_z" value="0.103" />
     <xacro:property name="distance_shoulder_arm_z" value="0.080" />

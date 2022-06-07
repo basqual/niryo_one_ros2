@@ -3,7 +3,14 @@
          type="niryo_one_driver::NiryoOneHardwareInterface"
          base_class_type="hardware_interface::SystemInterface">
     <description>
-		ROS2 Control System Driver for the Universal Robots series.
+		ROS2 Control System Driver
+    </description>
+  </class>
+  <class name="niryo_one_driver/NiryoOneActuatorInterface"
+         type="niryo_one_driver::NiryoOneActuatorInterface"
+         base_class_type="hardware_interface::ActuatorInterface">
+    <description>
+		ROS2 actuator Driver
     </description>
   </class>
 </library>

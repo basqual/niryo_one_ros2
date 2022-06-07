@@ -38,7 +38,7 @@ def generate_launch_description():
         package='niryo_one_rpi',
         executable='niryo_one_rpi',
         name='niryo_one_rpi',
-        respawn='false',
+        respawn=False,
         output='screen',
         namespace=LaunchConfiguration('ns')
     )

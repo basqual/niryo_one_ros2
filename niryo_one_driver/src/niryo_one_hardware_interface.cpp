@@ -22,6 +22,7 @@
 #include "pluginlib/class_list_macros.hpp"
 
 PLUGINLIB_EXPORT_CLASS(niryo_one_driver::NiryoOneHardwareInterface, hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(niryo_one_driver::NiryoOneActuatorInterface, hardware_interface::ActuatorInterface)
 
 using namespace niryo_one_driver;
 
@@ -33,88 +34,24 @@ CallbackReturn NiryoOneHardwareInterface::on_init(const hardware_interface::Hard
 
   info_ = system_info;
 
-  //Start Node
-  rclcpp::NodeOptions options;
-  options.allow_undeclared_parameters(true);  
-  options.automatically_declare_parameters_from_overrides(true);
-  node = rclcpp::Node::make_shared("niryo_one_hardware_interface",options);
+  if(start_driver()) {
 
-  RCLCPP_INFO(node->get_logger(), "Starting ...please wait...");
+    //Get Node Namespace
+    std::string ns = node->get_namespace();
+    ns = ns=="/"?"":ns;  
+    //Start Subscriber to get Stepper reset message
+    reset_controller_subscriber = node->create_subscription<std_msgs::msg::Empty>(ns+"/niryo_one/steppers_reset_controller", 10,
+                std::bind(&NiryoOneHardwareInterface::callbackTrajectoryGoal,this, std::placeholders::_1));
 
-  //Get hardware version
-  int hardware_version;
-  node->get_parameter("hardware_version", hardware_version);
+    trajectory_result_subscriber = node->create_subscription<action_msgs::msg::GoalStatusArray>(ns+"/niryo_one_follow_joint_trajectory_controller/follow_joint_trajectory/_action/status",10,
+      std::bind(&NiryoOneHardwareInterface::callbackTrajectoryResult,this, std::placeholders::_1));
 
-  //Check if Fake communicatioon
-  bool fake_communication;
-  node->get_parameter("fake_communication",fake_communication);
-  
-  //Return if wrong hardware version is set
-  if (hardware_version != 1 && hardware_version != 2) {
-      RCLCPP_ERROR(node->get_logger(),"Incorrect hardware version, should be 1 or 2");
-      return CallbackReturn::ERROR;
+    RCLCPP_INFO(node->get_logger(),"Starting ROS interface...");
+    ros_interface.reset(new RosInterface(comm.get(), rpi_diagnostics.get(),std::bind(&NiryoOneHardwareInterface::ResetControllers,this), node));
+
+    return CallbackReturn::SUCCESS;
   }
-
-  RCLCPP_INFO(node->get_logger(),"Starting NiryoOne communication");  
-  if (fake_communication) {
-      comm.reset(new FakeCommunication(hardware_version,node));
-  }
-  else {
-      comm.reset(new NiryoOneCommunication(hardware_version,node));
-  }
-    
-  //Init communication and check for errors
-  int init_result = comm->init();
-  if (init_result != 0) {
-      return CallbackReturn::ERROR;
-  }
-  rclcpp::sleep_for(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(0.1)));
-  RCLCPP_INFO(rclcpp::get_logger("niryo_one_communication"),"NiryoOne communication has been successfully started");
-
-  //Start communicaton control loop
-  RCLCPP_INFO(node->get_logger(),"Start communication control loop");
-  comm->manageHardwareConnection();
-  rclcpp::sleep_for(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(0.5)));
-
-  //Start Hardware interface Thread
-  hw_interface_thread.reset(new std::thread(std::bind(&NiryoOneHardwareInterface::NiryoOneHIThread,this)));
-
-  return CallbackReturn::SUCCESS;
-}
-void NiryoOneHardwareInterface::NiryoOneHIThread(){
-
-  //Start Raspberry PI Diagnostics
-  RCLCPP_INFO(node->get_logger(),"Start Rpi Diagnostics...");
-  rpi_diagnostics.reset(new RpiDiagnostics(node));
-
-  //Get Learning mode on startup parameter
-  bool learning_mode_activated_on_startup = true;
-  //node->get_parameter("learning_mode_activated_on_startup",learning_mode_activated_on_startup);
-
-  RCLCPP_INFO(node->get_logger(),"Starting ROS interface...");
-  ros_interface.reset(new RosInterface(comm.get(), rpi_diagnostics.get(), 
-            std::bind(&NiryoOneHardwareInterface::ResetControllers, this), learning_mode_activated_on_startup, 2,node));
-
-  // activate learning mode 
-  comm->activateLearningMode(learning_mode_activated_on_startup);
-  
-  //Get Node Namespace
-  std::string ns = node->get_namespace();
-  ns = ns=="/"?"":ns;
-  
-  //Start Subscriber to get Stepper reset message
-  reset_controller_subscriber = node->create_subscription<std_msgs::msg::Empty>(ns+"/niryo_one/steppers_reset_controller", 10,
-              std::bind(&NiryoOneHardwareInterface::callbackTrajectoryGoal, this, std::placeholders::_1));
-    
-  
-  trajectory_result_subscriber = node->create_subscription<action_msgs::msg::GoalStatusArray>(ns+"/niryo_one_follow_joint_trajectory_controller/follow_joint_trajectory/_action/status",10,
-      std::bind(&NiryoOneHardwareInterface::callbackTrajectoryResult, this, std::placeholders::_1));
-  
-
-  RCLCPP_INFO(node->get_logger(),"Spinning Node");
-  rclcpp::spin(node);
-  RCLCPP_INFO(node->get_logger(),"Shutdown Node");
-  rclcpp::shutdown();
+  else return CallbackReturn::ERROR;
 }
 
 std::vector<hardware_interface::StateInterface> NiryoOneHardwareInterface::export_state_interfaces()
@@ -181,3 +118,53 @@ void NiryoOneHardwareInterface::callbackTrajectoryResult(const action_msgs::msg:
     comm->synchronizeMotors(false);
   }
 }    
+
+CallbackReturn NiryoOneActuatorInterface::on_init(const hardware_interface::HardwareInfo& system_info)
+{
+  if (hardware_interface::ActuatorInterface::on_init(system_info) != CallbackReturn::SUCCESS) {
+    return CallbackReturn::ERROR;
+  }
+
+  info_ = system_info;
+
+  if(start_driver()) return CallbackReturn::SUCCESS;
+  else return CallbackReturn::ERROR;
+}
+
+std::vector<hardware_interface::StateInterface> NiryoOneActuatorInterface::export_state_interfaces()
+{
+  std::vector<hardware_interface::StateInterface> state_interfaces;
+
+  state_interfaces.emplace_back(
+          hardware_interface::StateInterface(info_.joints[0].name,hardware_interface::HW_IF_POSITION, &pos));
+  state_interfaces.emplace_back(
+          hardware_interface::StateInterface(info_.joints[0].name,hardware_interface::HW_IF_VELOCITY, &vel));
+  state_interfaces.emplace_back(
+          hardware_interface::StateInterface(info_.joints[0].name,hardware_interface::HW_IF_EFFORT, &eff));   
+  return state_interfaces;
+}
+
+std::vector<hardware_interface::CommandInterface> NiryoOneActuatorInterface::export_command_interfaces()
+{
+  std::vector<hardware_interface::CommandInterface> command_interfaces;
+
+  RCLCPP_INFO(rclcpp::get_logger("actuator_interface"),"Joint name: %s",info_.joints[0].name.c_str());
+  command_interfaces.emplace_back(
+      hardware_interface::CommandInterface(info_.joints[0].name,hardware_interface::HW_IF_POSITION, &cmd)); 
+  return command_interfaces;
+}
+hardware_interface::return_type NiryoOneActuatorInterface::write()
+{
+    comm->sendGripperPositionToRobot(cmd);
+    return hardware_interface::return_type::OK;
+}
+hardware_interface::return_type NiryoOneActuatorInterface::read()
+{
+  double pos_to_read = 0.0;
+  
+  comm->getCurrentGripperPosition(pos_to_read);
+
+  pos = pos_to_read;
+  
+  return hardware_interface::return_type::OK;
+}

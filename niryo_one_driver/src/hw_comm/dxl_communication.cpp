@@ -953,6 +953,24 @@ int DxlCommunication::pingAndSetTool(uint8_t id, std::string name)
     return TOOL_STATE_PING_OK;
 }
 
+void DxlCommunication::getCurrentGripperPosition(double& pos)
+{
+    pos = (int)tool.getPositionState();
+}
+
+void DxlCommunication::setGripperGoalPosition(double& goal_pos)
+{
+    tool.setPositionCommand(goal_pos);
+}
+
+void DxlCommunication::setGripperVelocity(int velocity){
+    tool.setVelocityCommand(velocity);
+}
+
+void DxlCommunication::setGripperTorque(int torque){
+    tool.setTorqueCommand(torque);
+}
+
 /*
  * This method should be called in a different thread than control loop
  */

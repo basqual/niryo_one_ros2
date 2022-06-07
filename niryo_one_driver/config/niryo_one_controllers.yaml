@@ -7,6 +7,9 @@ $(var ns)/controller_manager:
         niryo_one_follow_joint_trajectory_controller:
             type: joint_trajectory_controller/JointTrajectoryController
 
+        gripper_controller:
+            type: position_controllers/GripperActionController
+
 $(var ns)/niryo_one_follow_joint_trajectory_controller:
     ros__parameters:
         joints: 
@@ -33,3 +36,15 @@ $(var ns)/niryo_one_follow_joint_trajectory_controller:
             $(var ns)_joint_4: {trajectory: 0.5, goal: 0.2}
             $(var ns)_joint_5: {trajectory: 1.0, goal: 0.3}
             $(var ns)_joint_6: {trajectory: 1.0, goal: 0.3}
+
+$(var ns)/gripper_controller:
+    ros__parameters:
+        joint: $(var ns)_joint_base_to_mors_1  
+        command_interfaces:
+            - position
+        state_interfaces:
+            - position
+            - velocity
+            - effort
+        state_publish_rate: 100.0
+        action_monitor_rate: 50.0

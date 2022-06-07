@@ -70,6 +70,8 @@ ament_target_dependencies(
 
 pluginlib_export_plugin_description_file(hardware_interface hardware_interface_plugin.xml)
 
+pluginlib_export_plugin_description_file(actuator_interface hardware_interface_plugin.xml)
+
 EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
 message( STATUS "Architecture: ${ARCHITECTURE}" )
 

@@ -20,12 +20,22 @@
 #include "niryo_one_driver/ros_interface.h"
 
 RosInterface::RosInterface(CommunicationBase* niryo_one_comm, RpiDiagnostics* rpi_diagnostics,
-        std::function<void()> ResetControllers, bool learning_mode_on, int hardware_version,rclcpp::Node::SharedPtr node)
+        std::function<void()> ResetControllers,rclcpp::Node::SharedPtr node)
 {
     this->node = node;
     comm = niryo_one_comm;
+
+    //Get Learning mode on startup parameter
+    bool learning_mode_activated_on_startup = true;
+    node->get_parameter("learning_mode_activated_on_startup",learning_mode_activated_on_startup);
+
+    //Get hardware version
+    int hardware_version;
+    node->get_parameter("hardware_version", hardware_version);
+
+
     this->rpi_diagnostics = rpi_diagnostics;
-    this->learning_mode_on = learning_mode_on;
+    this->learning_mode_on = learning_mode_activated_on_startup;
     this->ResetControllers = ResetControllers;
     this->hardware_version = hardware_version;
     last_connection_up_flag = true;
@@ -253,6 +263,20 @@ void RosInterface::callbackRebootMotors(const niryo_one_msgs::srv::SetInt::Reque
     res->message = "OK";
 }
 
+void RosInterface::callbackSetGripperTorque(const niryo_one_msgs::srv::SetInt::Request::SharedPtr req, niryo_one_msgs::srv::SetInt::Response::SharedPtr res)
+{
+    comm->setGripperTorque(req->value);
+    res->status = 200;
+    res->message = "OK";
+}
+
+void RosInterface::callbackSetGripperVelocity(const niryo_one_msgs::srv::SetInt::Request::SharedPtr req, niryo_one_msgs::srv::SetInt::Response::SharedPtr res)
+{
+    comm->setGripperVelocity(req->value);
+    res->status = 200;
+    res->message = "OK";
+}
+
 void RosInterface::startServiceServers()
 {
     calibrate_motors_server = node->create_service<niryo_one_msgs::srv::SetInt>("niryo_one/calibrate_motors", std::bind(&RosInterface::callbackCalibrateMotors, this, std::placeholders::_1, std::placeholders::_2));
@@ -277,6 +301,10 @@ void RosInterface::startServiceServers()
 
     send_custom_dxl_value_server = node->create_service<niryo_one_msgs::srv::SendCustomDxlValue>("niryo_one/send_custom_dxl_value",std::bind(&RosInterface::callbackSendCustomDxlValue, this, std::placeholders::_1, std::placeholders::_2) );
     reboot_motors_server = node->create_service<niryo_one_msgs::srv::SetInt>("niryo_one/reboot_motors",std::bind(&RosInterface::callbackRebootMotors, this, std::placeholders::_1, std::placeholders::_2) );
+
+    set_gripper_torque_server = node->create_service<niryo_one_msgs::srv::SetInt>("niryo_one/gripper/torque",std::bind(&RosInterface::callbackSetGripperTorque, this, std::placeholders::_1, std::placeholders::_2) );
+    set_gripper_velocity_server = node->create_service<niryo_one_msgs::srv::SetInt>("niryo_one/gripper/velocity",std::bind(&RosInterface::callbackSetGripperVelocity, this, std::placeholders::_1, std::placeholders::_2) );
+
 }
 
 void RosInterface::publishHardwareStatus()

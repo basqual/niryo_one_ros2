@@ -39,6 +39,9 @@ class CommunicationBase {
         virtual void resumeHardwareControlLoop() = 0;
 
         virtual void getCurrentPosition(double pos[6]) = 0;
+
+        virtual void getCurrentGripperPosition(double& pos) = 0;
+        virtual void sendGripperPositionToRobot(double& cmd) = 0;
         
         virtual void getHardwareStatus(bool *is_connection_ok, std::string &error_message, 
                 int *calibration_needed, bool *calibration_in_progress,
@@ -59,6 +62,8 @@ class CommunicationBase {
 
         // tools
         virtual int pingAndSetDxlTool(uint8_t id, std::string name) = 0;
+        virtual void setGripperVelocity(int velocity);
+        virtual void setGripperTorque(int torque);
 
         virtual int pingAndSetConveyor(uint8_t id, bool activate, std::string &message) = 0;
         virtual int moveConveyor(uint8_t id, bool activate, int16_t speed, int8_t direction, std::string &message) = 0;

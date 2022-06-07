@@ -114,7 +114,7 @@ def generate_launch_description():
         package='niryo_one_tools',
         executable='niryo_one_tools',
         name='niryo_one_tools',
-        respawn='false',
+        respawn=False,
         output='screen',
         parameters=[toolConfig]
     )
@@ -138,8 +138,16 @@ def generate_launch_description():
         package='controller_manager',
         output='screen',
         executable='spawner',
+        arguments= ['gripper_controller','-c',[namespace,"/controller_manager"]]
+    )
+
+    start_joint_state_broadcaster_cmd = Node(
+        package='controller_manager',
+        output='screen',
+        executable='spawner',
         arguments=['joint_state_broadcaster','-c',[namespace,"/controller_manager"]]
     )
+
     # Create the launch description and populate
     ld = LaunchDescription()
 
@@ -156,6 +164,7 @@ def generate_launch_description():
     #ld.add_action(start_niryo_one_tools_cmd)
     ld.add_action(start_controller_spawner_1_cmd)
     ld.add_action(start_controller_spawner_2_cmd)
+    ld.add_action(start_joint_state_broadcaster_cmd)
     
 
     return ld   

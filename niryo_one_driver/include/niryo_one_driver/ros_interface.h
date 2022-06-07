@@ -56,7 +56,7 @@ class RosInterface {
     public:
 
         RosInterface(CommunicationBase* niryo_one_comm, RpiDiagnostics* rpi_diagnostics,
-                std::function<void()> ResetControllers, bool learning_mode_on, int hardware_version, rclcpp::Node::SharedPtr node);
+                std::function<void()> ResetControllers,rclcpp::Node::SharedPtr node);
 
         void startServiceServers();
         void startPublishers();
@@ -124,6 +124,9 @@ class RosInterface {
 
         rclcpp::Service<niryo_one_msgs::srv::OpenGripper>::SharedPtr open_gripper_server;
         rclcpp::Service<niryo_one_msgs::srv::CloseGripper>::SharedPtr close_gripper_server;
+        rclcpp::Service<niryo_one_msgs::srv::SetInt>::SharedPtr set_gripper_velocity_server;
+        rclcpp::Service<niryo_one_msgs::srv::SetInt>::SharedPtr set_gripper_torque_server;
+
         rclcpp::Service<niryo_one_msgs::srv::PullAirVacuumPump>::SharedPtr pull_air_vacuum_pump_server;
         rclcpp::Service<niryo_one_msgs::srv::PushAirVacuumPump>::SharedPtr push_air_vacuum_pump_server;
 
@@ -161,6 +164,8 @@ class RosInterface {
 
         void callbackRebootMotors(const niryo_one_msgs::srv::SetInt::Request::SharedPtr req, niryo_one_msgs::srv::SetInt::Response::SharedPtr res);
 
+        void callbackSetGripperTorque(const niryo_one_msgs::srv::SetInt::Request::SharedPtr req, niryo_one_msgs::srv::SetInt::Response::SharedPtr res);
+        void callbackSetGripperVelocity(const niryo_one_msgs::srv::SetInt::Request::SharedPtr req, niryo_one_msgs::srv::SetInt::Response::SharedPtr res);
 };
 
 #endif
