@@ -162,41 +162,55 @@ class ToolController:
             self.node.get_logger().info("Tool controller - error : " + str(message))
             self.server.set_aborted(self.create_action_result(400, message))
 
-    def callback_change_tool(self, req):
+    def callback_change_tool(self, req, response):
         new_tool_id = req.value
 
         # Check if action == detach tool (id == 0)
         if new_tool_id == 0:
             self.ros_command_interface.ping_dxl_tool(0, 'No Dxl Tool')
             self.current_tool = None
-            self.publish_current_tool_id(None)
-            return self.create_response(200, "Tool has been detached")
+            self.publish_current_tool_id()
+            response.status = 200
+            response.message = "Tool has been detached"
+            return response
 
         # Check if tool id is null
         if new_tool_id is None:
-            return self.create_response(400, "No tool ID provided")
+            response.status = 400
+            response.message = "No tool ID provided"
+            return response
 
         if self.current_tool is not None:
             if self.current_tool.get_id() == new_tool_id:
-                return self.create_response(200, "This tool has already been selected")
+                response.status = 200
+                response.message = "This tool has already been selected"
+                return response
             if self.current_tool.is_active:
-                return self.create_response(400, "Current tool is still active, please retry later")
+                response.status = 400
+                response.message = "Current tool is still active, please retry later"
+                return response
 
         # look for new tool in available tools array
         for tool in self.available_tools:
             if new_tool_id == tool.get_id():
                 if tool.get_type() == "gripper" or tool.get_type() == "vacuum_pump":  # extra check for dynamixel tools
                     if not tool.is_connected():
-                        return self.create_response(400, "Correct ID but Dynamixel tool is not connected")
+                        response.status = 400
+                        response.message = "Correct ID but Dynamixel tool is not connected"
+                        return response
                 else:
                     self.ros_command_interface.ping_dxl_tool(0,
                                                              'No Dxl Tool')  # remove dxl tool if another kind of tool is selected
                 self.current_tool = tool
-                self.publish_current_tool_id(None)
-                return self.create_response(200, "New tool has been selected, id : " + str(new_tool_id))
+                self.publish_current_tool_id()
+                response.status = 200
+                response.message = "New tool has been selected, id : " + str(new_tool_id)
+                return response
 
         # no tool found in available tools
-        return self.create_response(400, "This ID does not match any available tool ID")
+        response.status = 400
+        response.message = "This ID does not match any available tool ID"
+        return response
 
     @staticmethod
     def create_action_result(status, message):
