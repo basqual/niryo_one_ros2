@@ -19,5 +19,5 @@ Currently, the User interface has not been ported, so the calibration and learni
 - ```ros2 service call /niryo_one/activate_learning_mode niryo_one_msgs/srv/SetInt "{value : 0}"``` (0 = disable)
 
 ## Known Issues
-- niryo_one_tools services not yet fully functional
 - Gripper joint_state reading is off
+- Very rarely niryo_one_hardware_interface plugin crashes on launch
