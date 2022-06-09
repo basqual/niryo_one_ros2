@@ -92,7 +92,6 @@
                upper="0.01"
                effort="1"
                velocity="5"/>
-        <mimic joint="${prefix}_gripper_joint" multiplier="1" offset="0" />
     </joint>
 
     <!-- Mors 2 -->
