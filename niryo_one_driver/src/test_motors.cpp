@@ -7,14 +7,14 @@ NiryoOneTestMotor::NiryoOneTestMotor(rclcpp::Node::SharedPtr node)
 
     std::string ns = node->get_namespace();
     ns = ns=="/"?"":ns;
-
+    
     reset_stepper_publisher = node->create_publisher<std_msgs::msg::Empty>(ns+"/niryo_one/steppers_reset_controller", 1000);
     calibrate_motor_client = node->create_client<niryo_one_msgs::srv::SetInt>("/niryo_one/calibrate_motors");
     
     this->traj_client_ = rclcpp_action::create_client<control_msgs::action::FollowJointTrajectory>(node,ns+"/niryo_one_follow_joint_trajectory_controller/follow_joint_trajectory");
     rclcpp::QoS qos(rclcpp::KeepLast(10));
     joint_state_subscriber = node->create_subscription<sensor_msgs::msg::JointState>(ns+"/joint_states",qos,std::bind(&NiryoOneTestMotor::callbackJointSate, this, std::placeholders::_1)); //std::bind(&NiryoOneTestMotor::callbackJointSate, this,std::placeholders::_1));
-
+    
     RCLCPP_INFO(node->get_logger(),"Test motors up");
 }
 

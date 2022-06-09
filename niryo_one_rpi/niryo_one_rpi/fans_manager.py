@@ -37,7 +37,8 @@ class FansManager:
         self.set_fans(True)
         sleep(5)
         self.set_fans(not self.learning_mode_on)
-        self.learning_mode_subscriber = self.node.create_subscription(Bool,node.get_namespace()+'/niryo_one/learning_mode', self.callback_learning_mode,10)
+        namespace = node.get_namespace() if node.get_namespace() != "/" else ""
+        self.learning_mode_subscriber = self.node.create_subscription(Bool,namespace + '/niryo_one/learning_mode', self.callback_learning_mode,10)
 
     def setup_fans(self):
         GPIO.setwarnings(False)

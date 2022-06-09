@@ -78,14 +78,10 @@ message( STATUS "Architecture: ${ARCHITECTURE}" )
 if (${ARCHITECTURE} MATCHES "aarch64")
     message(STATUS "wiringPi library is required for niryo_one_hardware_plugin (aarch64 processor)")
     target_link_libraries(niryo_one_hardware_plugin
-        ${catkin_LIBRARIES} 
         -lwiringPi
     )
 else()
     message(STATUS "wiringPi library not required")
-    target_link_libraries(niryo_one_hardware_plugin 
-        ${catkin_LIBRARIES} 
-    )
 endif()
 
 # INSTALL

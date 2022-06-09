@@ -958,17 +958,9 @@ void DxlCommunication::getCurrentGripperPosition(double& pos)
     pos = (int)tool.getPositionState();
 }
 
-void DxlCommunication::setGripperGoalPosition(double& goal_pos)
+void DxlCommunication::getCurrentGripperEffort(double& eff)
 {
-    tool.setPositionCommand(goal_pos);
-}
-
-void DxlCommunication::setGripperVelocity(int velocity){
-    tool.setVelocityCommand(velocity);
-}
-
-void DxlCommunication::setGripperTorque(int torque){
-    tool.setTorqueCommand(torque);
+    eff = (int)tool.getTorqueState();
 }
 
 /*

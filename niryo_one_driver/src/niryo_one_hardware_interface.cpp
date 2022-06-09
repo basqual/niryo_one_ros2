@@ -138,8 +138,6 @@ std::vector<hardware_interface::StateInterface> NiryoOneActuatorInterface::expor
   state_interfaces.emplace_back(
           hardware_interface::StateInterface(info_.joints[0].name,hardware_interface::HW_IF_POSITION, &pos));
   state_interfaces.emplace_back(
-          hardware_interface::StateInterface(info_.joints[0].name,hardware_interface::HW_IF_VELOCITY, &vel));
-  state_interfaces.emplace_back(
           hardware_interface::StateInterface(info_.joints[0].name,hardware_interface::HW_IF_EFFORT, &eff));   
   return state_interfaces;
 }
@@ -147,24 +145,22 @@ std::vector<hardware_interface::StateInterface> NiryoOneActuatorInterface::expor
 std::vector<hardware_interface::CommandInterface> NiryoOneActuatorInterface::export_command_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
-
-  RCLCPP_INFO(rclcpp::get_logger("actuator_interface"),"Joint name: %s",info_.joints[0].name.c_str());
-  command_interfaces.emplace_back(
-      hardware_interface::CommandInterface(info_.joints[0].name,hardware_interface::HW_IF_POSITION, &cmd)); 
   return command_interfaces;
 }
 hardware_interface::return_type NiryoOneActuatorInterface::write()
 {
-    comm->sendGripperPositionToRobot(cmd);
     return hardware_interface::return_type::OK;
 }
 hardware_interface::return_type NiryoOneActuatorInterface::read()
 {
   double pos_to_read = 0.0;
+  double eff_to_read = 0.0;
   
   comm->getCurrentGripperPosition(pos_to_read);
+  comm->getCurrentGripperEffort(eff_to_read);
 
   pos = pos_to_read;
-  
+  eff = eff_to_read;
+
   return hardware_interface::return_type::OK;
 }

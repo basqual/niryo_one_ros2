@@ -68,12 +68,14 @@ class LEDManager:
         self.state = LedState.OK
         self.set_led_from_state(dxl_leds=True)
 
+        namespace = node.get_namespace() if node.get_namespace() != "/" else ""
+
         self.set_led_state_server = node.create_service(SetInt,'/niryo_one/rpi/set_led_state', self.callback_set_led_state)
 
-        self.set_dxl_leds_client = node.create_client(SetLeds,'/niryo_one/set_dxl_leds')
+        self.set_dxl_leds_client = node.create_client(SetLeds,namespace + '/niryo_one/set_dxl_leds')
 
         # Subscribe to hotspot and hardware status. Those values will override standard states
-        self.hardware_status_subscriber = node.create_subscription(HardwareStatus,node.get_namespace()+'/niryo_one/hardware_status', self.callback_hardware_status,10)
+        self.hardware_status_subscriber = node.create_subscription(HardwareStatus,namespace+'/niryo_one/hardware_status', self.callback_hardware_status,10)
 
         self.node.get_logger().info('LED manager has been started.')
 

@@ -32,16 +32,18 @@ class ToolRosCommandInterface:
     def __init__(self,node):
         self.node = node
 
-        self.service_ping_dxl_tool = self.node.create_client(PingDxlTool,'niryo_one/tools/ping_and_set_dxl_tool')
+        namespace = node.get_namespace() if node.get_namespace() != "/" else ""
 
-        self.service_open_gripper = self.node.create_client(OpenGripper,'niryo_one/tools/open_gripper')
-        self.service_close_gripper = self.node.create_client(CloseGripper,'niryo_one/tools/close_gripper')
+        self.service_ping_dxl_tool = self.node.create_client(PingDxlTool,namespace + 'niryo_one/tools/ping_and_set_dxl_tool')
 
-        self.service_pull_air_vacuum_pump = self.node.create_client(PullAirVacuumPump,'niryo_one/tools/pull_air_vacuum_pump')
-        self.service_push_air_vacuum_pump = self.node.create_client(PushAirVacuumPump,'niryo_one/tools/push_air_vacuum_pump')
+        self.service_open_gripper = self.node.create_client(OpenGripper,namespace + 'niryo_one/tools/open_gripper')
+        self.service_close_gripper = self.node.create_client(CloseGripper,namespace + 'niryo_one/tools/close_gripper')
 
-        self.service_setup_digital_output_tool = self.node.create_client(SetDigitalIO,'niryo_one/rpi/set_digital_io_mode')
-        self.service_activate_digital_output_tool = self.node.create_client(SetDigitalIO,'niryo_one/rpi/set_digital_io_state')
+        self.service_pull_air_vacuum_pump = self.node.create_client(PullAirVacuumPump,namespace + 'niryo_one/tools/pull_air_vacuum_pump')
+        self.service_push_air_vacuum_pump = self.node.create_client(PushAirVacuumPump,namespace + 'niryo_one/tools/push_air_vacuum_pump')
+
+        self.service_setup_digital_output_tool = self.node.create_client(SetDigitalIO,namespace + 'niryo_one/rpi/set_digital_io_mode')
+        self.service_activate_digital_output_tool = self.node.create_client(SetDigitalIO,namespace + 'niryo_one/rpi/set_digital_io_state')
 
         self.node.get_logger().info("Interface between Tools Controller and Ros Control has been started.")
 

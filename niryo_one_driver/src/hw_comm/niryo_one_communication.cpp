@@ -524,10 +524,10 @@ void NiryoOneCommunication::getCurrentGripperPosition(double& pos)
     }
 }
 
-void NiryoOneCommunication::sendGripperPositionToRobot(double& cmd)
+void NiryoOneCommunication::getCurrentGripperEffort(double& eff)
 {
     if (dxl_enabled){
-        dxlComm->setGripperGoalPosition(cmd);
+        dxlComm->getCurrentGripperEffort(eff);
     }
 }
 
@@ -650,18 +650,4 @@ int NiryoOneCommunication::closeGripper(uint8_t id, uint16_t close_position, uin
         return dxlComm->closeGripper(id, close_position, close_speed, close_hold_torque, close_max_torque);
     }
     return GRIPPER_STATE_CLOSE;
-}
-
-void NiryoOneCommunication::setGripperVelocity(int velocity)
-{
-    if (dxl_enabled) {
-        return dxlComm->setGripperVelocity(velocity);
-    }
-}
-
-void NiryoOneCommunication::setGripperTorque(int torque)
-{
-    if (dxl_enabled) {
-        return dxlComm->setGripperTorque(torque);
-    }
 }

@@ -1,4 +1,4 @@
-niryo_one_tools:
+$(var ns)/niryo_one_tools:
   ros__parameters:
     command_list:
         # Gripper

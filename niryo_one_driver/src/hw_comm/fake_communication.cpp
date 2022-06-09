@@ -122,17 +122,9 @@ void FakeCommunication::getCurrentGripperPosition(double& pos)
     pos = gripper_pos; 
 }
 
-void FakeCommunication::sendGripperPositionToRobot(double& cmd)
+void FakeCommunication::getCurrentGripperEffort(double& eff)
 {
-    gripper_pos = cmd; 
-}
-
-void setGripperVelocity(int velocity){
-    //
-}
-
-void setGripperTorque(int torque){
-    //
+    eff = 0.0; 
 }
         
 void FakeCommunication::addCustomDxlCommand(int motor_type, uint8_t id, uint32_t value,

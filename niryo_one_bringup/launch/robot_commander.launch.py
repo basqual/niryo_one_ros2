@@ -2,7 +2,6 @@ from inspect import Parameter
 from operator import truediv
 import os
 from pickle import TRUE
-import xacro
 
 from ament_index_python.packages import get_package_share_directory
 

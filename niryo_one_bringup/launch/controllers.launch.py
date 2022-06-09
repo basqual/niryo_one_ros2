@@ -2,7 +2,6 @@ from inspect import Parameter
 from operator import truediv
 import os
 from pickle import TRUE
-import xacro
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -116,7 +115,7 @@ def generate_launch_description():
         name='niryo_one_tools',
         respawn=False,
         output='screen',
-        parameters=[toolConfig]
+        parameters=[ParameterFile(toolConfig, allow_substs=True)]
     )
 
     start_robot_state_publisher_cmd = Node(
@@ -161,7 +160,7 @@ def generate_launch_description():
     ld.add_action(hardware_version_launch_arg)
     ld.add_action(start_niryo_one_driver_cmd)
     #ld.add_action(start_robot_state_publisher_cmd)
-    #ld.add_action(start_niryo_one_tools_cmd)
+    ld.add_action(start_niryo_one_tools_cmd)
     ld.add_action(start_controller_spawner_1_cmd)
     ld.add_action(start_controller_spawner_2_cmd)
     ld.add_action(start_joint_state_broadcaster_cmd)

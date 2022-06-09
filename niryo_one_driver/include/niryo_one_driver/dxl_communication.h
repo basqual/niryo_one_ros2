@@ -108,9 +108,7 @@ class DxlCommunication {
         void setLeds(std::vector<int> &leds);
 
         void getCurrentGripperPosition(double& pos);
-        void setGripperGoalPosition(double& goal_pos);
-        void setGripperVelocity(int velocity);
-        void setGripperTorque(int torque);
+        void getCurrentGripperEffort(double& eff);
 
 
         int scanAndCheck();

@@ -169,7 +169,6 @@ class NiryoOneActuatorInterface:  public hardware_interface::ActuatorInterface {
     private:        
         double cmd = 0;
         double pos = 0;
-        double vel = 0;
         double eff = 0;
 
 };

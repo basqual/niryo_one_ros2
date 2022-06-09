@@ -21,18 +21,17 @@
 
 RosInterface::RosInterface(CommunicationBase* niryo_one_comm, RpiDiagnostics* rpi_diagnostics,
         std::function<void()> ResetControllers,rclcpp::Node::SharedPtr node)
-{
+{    
     this->node = node;
     comm = niryo_one_comm;
 
     //Get Learning mode on startup parameter
-    bool learning_mode_activated_on_startup = true;
-    node->get_parameter("learning_mode_activated_on_startup",learning_mode_activated_on_startup);
+    bool learning_mode_activated_on_startup;
+    node->get_parameter_or("learning_mode_activated_on_startup",learning_mode_activated_on_startup,true);
 
     //Get hardware version
     int hardware_version;
-    node->get_parameter("hardware_version", hardware_version);
-
+    node->get_parameter_or("hardware_version", hardware_version,2);
 
     this->rpi_diagnostics = rpi_diagnostics;
     this->learning_mode_on = learning_mode_activated_on_startup;
@@ -41,7 +40,7 @@ RosInterface::RosInterface(CommunicationBase* niryo_one_comm, RpiDiagnostics* rp
     last_connection_up_flag = true;
 
     test_motor.reset(new NiryoOneTestMotor(node));
-    
+
     node->get_parameter("image_version", rpi_image_version);
     node->get_parameter("ros_version", ros_niryo_one_version);
    
@@ -263,20 +262,6 @@ void RosInterface::callbackRebootMotors(const niryo_one_msgs::srv::SetInt::Reque
     res->message = "OK";
 }
 
-void RosInterface::callbackSetGripperTorque(const niryo_one_msgs::srv::SetInt::Request::SharedPtr req, niryo_one_msgs::srv::SetInt::Response::SharedPtr res)
-{
-    comm->setGripperTorque(req->value);
-    res->status = 200;
-    res->message = "OK";
-}
-
-void RosInterface::callbackSetGripperVelocity(const niryo_one_msgs::srv::SetInt::Request::SharedPtr req, niryo_one_msgs::srv::SetInt::Response::SharedPtr res)
-{
-    comm->setGripperVelocity(req->value);
-    res->status = 200;
-    res->message = "OK";
-}
-
 void RosInterface::startServiceServers()
 {
     calibrate_motors_server = node->create_service<niryo_one_msgs::srv::SetInt>("niryo_one/calibrate_motors", std::bind(&RosInterface::callbackCalibrateMotors, this, std::placeholders::_1, std::placeholders::_2));
@@ -301,9 +286,6 @@ void RosInterface::startServiceServers()
 
     send_custom_dxl_value_server = node->create_service<niryo_one_msgs::srv::SendCustomDxlValue>("niryo_one/send_custom_dxl_value",std::bind(&RosInterface::callbackSendCustomDxlValue, this, std::placeholders::_1, std::placeholders::_2) );
     reboot_motors_server = node->create_service<niryo_one_msgs::srv::SetInt>("niryo_one/reboot_motors",std::bind(&RosInterface::callbackRebootMotors, this, std::placeholders::_1, std::placeholders::_2) );
-
-    set_gripper_torque_server = node->create_service<niryo_one_msgs::srv::SetInt>("niryo_one/gripper/torque",std::bind(&RosInterface::callbackSetGripperTorque, this, std::placeholders::_1, std::placeholders::_2) );
-    set_gripper_velocity_server = node->create_service<niryo_one_msgs::srv::SetInt>("niryo_one/gripper/velocity",std::bind(&RosInterface::callbackSetGripperVelocity, this, std::placeholders::_1, std::placeholders::_2) );
 
 }
 

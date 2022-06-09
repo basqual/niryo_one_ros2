@@ -45,6 +45,7 @@ class FakeCommunication : public CommunicationBase {
 
         void getCurrentPosition(double pos[6]);
         void getCurrentGripperPosition(double& pos);
+        void getCurrentGripperEffort(double& eff);
         
         void getHardwareStatus(bool *is_connection_ok, std::string &error_message,
                 int *calibration_needed, bool *calibration_in_progress,
@@ -56,7 +57,6 @@ class FakeCommunication : public CommunicationBase {
                 std::vector<std::string> &firmware_versions);
         
         void sendPositionToRobot(const double cmd[6]); 
-        void sendGripperPositionToRobot(double& cmd);
 
         void activateLearningMode(bool activate);
         bool setLeds(std::vector<int> &leds, std::string &message);
@@ -70,9 +70,6 @@ class FakeCommunication : public CommunicationBase {
         
         int openGripper(uint8_t id, uint16_t open_position, uint16_t open_speed, uint16_t open_hold_torque);
         int closeGripper(uint8_t id, uint16_t close_position, uint16_t close_speed, uint16_t close_hold_torque, uint16_t close_max_torque);
-
-        void setGripperVelocity(int velocity);
-        void setGripperTorque(int torque);
         
         int pullAirVacuumPump(uint8_t id, uint16_t pull_air_position, uint16_t pull_air_hold_torque);
         int pushAirVacuumPump(uint8_t id, uint16_t push_air_position);

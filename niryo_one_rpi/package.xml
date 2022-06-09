@@ -4,7 +4,7 @@
     <version>2.3.3</version>
     <description>Provides functionalities to control end-effectors and accessories for Niryo One</description>
     <author>Edouard Renard</author>
-    <maintainer email="e.rey-coquais@niryo.com">Etienne Rey-Coquais</maintainer>
+    <maintainer email="pascal.stoop@pasto.ch">Pascal Stoop</maintainer>
     <license>GPLv3</license>
 
     <depend>rclpy</depend>
