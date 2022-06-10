@@ -124,6 +124,9 @@ def generate_launch_description():
         output='screen',
         executable='robot_state_publisher',
         parameters=[robot_description],
+        remappings=[
+                (['/',LaunchConfiguration('ns'),'/joint_states'], '/joint_states'),
+            ],  
     )
 
     start_controller_spawner_1_cmd = Node(
